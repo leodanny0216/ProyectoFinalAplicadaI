@@ -1,0 +1,252 @@
+﻿@page "/EditCompra"
+@page "/EditCompra/{CompraId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject CompraService compraservice
+@inject InsumoService insumoService
+
+<PageTitle>Registro de Compras</PageTitle>
+
+<EditForm Model="compra" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Registro de Compras</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col col-4">
+                    <label>Fecha Compra:</label>
+                    <InputDate @bind-Value="compra.FechaCompra" class="form-control" disabled></InputDate>
+                    <ValidationMessage For="@(() => compra.FechaCompra)" />
+                </div>
+                <div class="col col-8">
+                    <label>Descripción:</label>
+                    <InputText @bind-Value="compra.Descripcion" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => compra.Descripcion)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-3">
+            <div class="card-header">
+                <h4>Detalles de la Compra</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col col-6">
+                        <label>Insumo:</label>
+                        <InputSelect @bind-Value="detalle.InsumoId" class="form-select">
+                            <option value="0" selected disabled>Seleccione...</option>
+                            @foreach (var item in listaInsumos)
+                            {
+                                <option value="@item.InsumosId">@item.NombreInsumo</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col col-6">
+                        <label>Cantidad:</label>
+                        <InputNumber @bind-Value="detalle.Cantidad" class="form-control"></InputNumber>
+                        <ValidationMessage For="@(() => detalle.Cantidad)" />
+                    </div>
+                </div>
+                <br />
+                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-primary bi bi-plus-square">Agregar</button>
+
+                <table class="table table-bordered table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Insumo</th>
+                            <th>Cantidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in compra.ComprasDetalle)
+                        {
+                            <tr>
+                                <td>@ObtenerNombreInsumo(item.InsumoId)</td>
+                                <td>@item.Cantidad</td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger" @onclick="() => EliminarDetalle(item)">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexCompra" class="btn btn-outline-danger bi bi-arrow-return-left"> Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@if (mostrarMensaje)
+{
+    <div class="alert @mensajeClase" role="alert">
+        @mensajeTexto
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int CompraId { get; set; }
+    public Compras compra { get; set; } = new Compras();
+    public ComprasDetalle detalle { get; set; } = new ComprasDetalle();
+    public List<Insumos> listaInsumos { get; set; } = new List<Insumos>();
+    public List<ComprasDetalle> DetallesAgregado { get; set; } = new List<ComprasDetalle>();
+    public List<ComprasDetalle> DetallesEliminado { get; set; } = new List<ComprasDetalle>();
+
+    // Variables para mensajes de feedback
+    private bool mostrarMensaje = false;
+    private string mensajeTexto = "";
+    private string mensajeClase = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaInsumos = await insumoService.Listar(t => true);
+
+        if (CompraId > 0)
+        {
+            compra = await compraservice.GetCompras(CompraId);
+            if (compra == null)
+            {
+                Navigation.NavigateTo("/Error");
+            }
+        }
+        else
+        {
+            compra = new Compras
+                {
+                    FechaCompra = DateTime.Now,
+                    ComprasDetalle = new List<ComprasDetalle>()
+                };
+        }
+    }
+
+    public string ObtenerNombreInsumo(int insumoId)
+    {
+        var insumo = listaInsumos.FirstOrDefault(c => c.InsumosId == insumoId);
+        return insumo?.NombreInsumo ?? string.Empty;
+    }
+
+    public void EliminarDetalle(ComprasDetalle detalleAEliminar)
+    {
+        if (compra.ComprasDetalle.Contains(detalleAEliminar))
+        {
+            compra.ComprasDetalle.Remove(detalleAEliminar);
+            DetallesEliminado.Add(detalleAEliminar);
+        }
+    }
+
+    public void AgregarDetalle()
+    {
+        if (detalle.InsumoId == 0)
+        {
+            MostrarMensaje("Debe seleccionar un insumo", "alert-danger");
+            return;
+        }
+
+        if (compra.ComprasDetalle.Any(cd => cd.InsumoId == detalle.InsumoId))
+        {
+            MostrarMensaje("Este insumo ya está en la lista", "alert-warning");
+            return;
+        }
+
+        if (detalle.Cantidad <= 0)
+        {
+            MostrarMensaje("La cantidad debe ser mayor a cero", "alert-danger");
+            return;
+        }
+
+        var insumo = listaInsumos.FirstOrDefault(I => I.InsumosId == detalle.InsumoId);
+        if (insumo == null)
+        {
+            MostrarMensaje("Insumo no encontrado", "alert-danger");
+            return;
+        }
+
+        compra.ComprasDetalle.Add(new ComprasDetalle
+            {
+                InsumoId = detalle.InsumoId,
+                Cantidad = detalle.Cantidad
+            });
+
+        DetallesAgregado.Add(detalle);
+        detalle = new ComprasDetalle();
+    }
+
+    private void MostrarMensaje(string mensaje, string clase)
+    {
+        mensajeTexto = mensaje;
+        mensajeClase = clase;
+        mostrarMensaje = true;
+        StateHasChanged();
+    }
+
+    public async Task Guardar()
+    {
+        mostrarMensaje = false;
+
+        // Validaciones básicas
+        if (string.IsNullOrWhiteSpace(compra.Descripcion))
+        {
+            MostrarMensaje("La descripción es requerida", "alert-danger");
+            return;
+        }
+
+        if (compra.ComprasDetalle.Count == 0)
+        {
+            MostrarMensaje("Debe agregar al menos un detalle", "alert-danger");
+            return;
+        }
+
+        try
+        {
+            bool guardo = await compraservice.Guardar(compra);
+
+            if (guardo)
+            {
+                // Actualizar cantidades de insumos
+                foreach (var detalleAgregado in DetallesAgregado)
+                {
+                    var insumo = listaInsumos.FirstOrDefault(I => I.InsumosId == detalleAgregado.InsumoId);
+                    if (insumo != null)
+                    {
+                        insumo.Cantidad += detalleAgregado.Cantidad;
+                        await insumoService.Guardar(insumo);
+                    }
+                }
+
+                foreach (var detalleEliminado in DetallesEliminado)
+                {
+                    var insumo = listaInsumos.FirstOrDefault(I => I.InsumosId == detalleEliminado.InsumoId);
+                    if (insumo != null)
+                    {
+                        insumo.Cantidad -= detalleEliminado.Cantidad;
+                        await insumoService.Guardar(insumo);
+                    }
+                }
+
+                MostrarMensaje("Compra guardada correctamente", "alert-success");
+                await Task.Delay(2000);
+                Navigation.NavigateTo("/IndexCompra");
+            }
+            else
+            {
+                MostrarMensaje("No se pudo guardar la compra", "alert-danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            MostrarMensaje($"Error al guardar: {ex.Message}", "alert-danger");
+        }
+    }
+}

@@ -1,0 +1,150 @@
+﻿@page "/CreateReclamo"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject ReclamoService reclamoservice
+@inject ClienteService clienteservice
+
+<PageTitle>Crear Reclamo</PageTitle>
+
+<EditForm Model="reclamo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Crear Reclamo</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="row">
+                    <div class="col col-6">
+                        <label>Fecha del Reclamo:</label>
+                        <InputDate @bind-Value="reclamo.FechaReclamo" class="form-control"></InputDate>
+                        <ValidationMessage For="(() => reclamo.FechaReclamo)" />
+                    </div>
+                    <div class="col col-6">
+                        <label>Cliente a Reclamar:</label>
+                        <InputSelect @bind-Value="reclamo.ClienteId" class="form-select">
+                            <option value="0" selected disabled>Seleccione...</option>
+                            @foreach (var item in listaCliente)
+                            {
+                                <option value="@item.ClienteId">@item.Email</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="(() => reclamo.ClienteId)" />
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 mb-3">
+                        <label>Descripción:</label>
+                        <InputTextArea @bind-Value="reclamo.Descripcion" class="form-control" rows="3"></InputTextArea>
+                        <ValidationMessage For="(() => reclamo.Descripcion)" />
+                    </div>
+                    <div class="col-12">
+                        <label>Acción Tomada:</label>
+                        <InputTextArea @bind-Value="reclamo.AccionTomada" class="form-control" rows="3"></InputTextArea>
+                        <ValidationMessage For="(() => reclamo.AccionTomada)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexReclamo" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@if (mostrarMensaje)
+{
+    <div class="alert @mensajeClase" role="alert">
+        @mensajeTexto
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int ReclamoId { get; set; }
+    public Reclamos reclamo { get; set; } = new Reclamos();
+    public List<Clientes> listaCliente { get; set; } = new List<Clientes>();
+
+    // Variables para mensajes de feedback
+    private bool mostrarMensaje = false;
+    private string mensajeTexto = "";
+    private string mensajeClase = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaCliente = await clienteservice.Listar(t => true);
+
+        if (ReclamoId > 0)
+        {
+            this.reclamo.ReclamoId = ReclamoId;
+            await this.Buscar();
+        }
+        else
+        {
+            reclamo.FechaReclamo = DateTime.Now;
+        }
+    }
+
+    public async Task Buscar()
+    {
+        var reclamoEncontrado = await reclamoservice.Buscar(reclamo.ReclamoId);
+        if (reclamoEncontrado != null)
+        {
+            this.reclamo = reclamoEncontrado;
+        }
+    }
+
+    public async Task Guardar()
+    {
+        mostrarMensaje = false;
+
+        // Validación básica
+        if (reclamo.ClienteId <= 0)
+        {
+            MostrarMensaje("Debe seleccionar un cliente", "alert-danger");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(reclamo.Descripcion))
+        {
+            MostrarMensaje("La descripción es requerida", "alert-danger");
+            return;
+        }
+
+        try
+        {
+            bool guardo = await reclamoservice.Guardar(reclamo);
+
+            if (guardo)
+            {
+                MostrarMensaje(ReclamoId > 0 ? "Reclamo actualizado correctamente" : "Reclamo creado correctamente", "alert-success");
+                await Task.Delay(1500); // Espera para que el usuario vea el mensaje
+                Atras();
+            }
+            else
+            {
+                MostrarMensaje("No se pudo guardar el reclamo", "alert-danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            MostrarMensaje($"Error al guardar: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private void MostrarMensaje(string mensaje, string clase)
+    {
+        mensajeTexto = mensaje;
+        mensajeClase = clase;
+        mostrarMensaje = true;
+        StateHasChanged();
+    }
+
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexReclamo");
+    }
+}

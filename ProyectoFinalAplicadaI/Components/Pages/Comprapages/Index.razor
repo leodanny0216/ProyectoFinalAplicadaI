@@ -1,0 +1,143 @@
+﻿@page "/IndexCompra"
+@page "/IndexCompra/{ComprasId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject CompraService compraservice
+
+<PageTitle>Detalles de Compras</PageTitle>
+
+<div class="card border-0 shadow-lg" style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-cart-check me-2"></i>Detalles de Compras</h3>
+            <a href="/CreateCompra" class="btn btn-light bi bi-plus-square"> Crear</a>
+        </div>
+    </div>
+
+    <div class="card-body" style="background-color: #f8f9fa;">
+        <!-- Filtros por fecha -->
+        <div class="row mb-4 g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label text-primary fw-bold">Desde:</label>
+                <input class="form-control border-primary" type="date" @bind="Desde" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label text-primary fw-bold">Hasta:</label>
+                <input class="form-control border-primary" type="date" @bind="Hasta" />
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="button" @onclick="Buscar" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i>Buscar
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtros adicionales -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <label class="form-label text-primary fw-bold">Filtrar Por:</label>
+                <InputSelect @bind-Value="Opcion" class="form-select border-primary">
+                    <option value="0" selected disabled>Seleccione...</option>
+                    <option value="1">CompraId</option>
+                    <option value="2">Descripción</option>
+                </InputSelect>
+            </div>
+
+            @if (Opcion == 1)
+            {
+                <div class="col-md-3">
+                    <label class="form-label text-primary fw-bold">ID:</label>
+                    <InputNumber @bind-Value="ComprassId" class="form-control border-primary"></InputNumber>
+                </div>
+            }
+            else if (Opcion == 2)
+            {
+                <div class="col-md-3">
+                    <label class="form-label text-primary fw-bold">Descripción:</label>
+                    <InputText @bind-Value="Descripcion" class="form-control border-primary"></InputText>
+                </div>
+            }
+        </div>
+
+        <!-- Tabla de resultados -->
+        <div class="table-responsive rounded-3 shadow-sm">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th scope="col" class="text-center">ID</th>
+                        <th scope="col" class="text-center">Descripción</th>
+                        <th scope="col" class="text-center">Fecha Compra</th>
+                        <th scope="col" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @foreach (var item in ListaCompras)
+                    {
+                        <tr>
+                            <td class="text-center align-middle">@item.ComprasId</td>
+                            <td class="text-center align-middle">@item.Descripcion</td>
+                            <td class="text-center align-middle">@item.FechaCompra.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center align-middle">
+                                <a href="/ViewCompra/@item.ComprasId" class="btn btn-sm btn-outline-primary bi bi-eye"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center">
+        <span class="badge bg-primary rounded-pill fs-6">Cantidad de Compras: @ListaCompras.Count</span>
+        <a href="/" class="btn btn-outline-danger bi bi-house-door-fill"> Volver</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ComprasId { get; set; }
+    public Compras compra { get; set; } = new Compras();
+    public List<Compras> ListaCompras { get; set; } = new List<Compras>();
+    public int Opcion = 0;
+    public int ComprassId { get; set; }
+    public string Descripcion { get; set; }
+
+    public DateTime Desde { get; set; }
+    public DateTime Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaCompras = await compraservice.Listar(t => true);
+        Desde = DateTime.Now.AddMonths(-1);
+        Hasta = DateTime.Now;
+    }
+
+    public async Task Buscar()
+    {
+        Hasta = new DateTime(Hasta.Year, Hasta.Month, Hasta.Day, 23, 59, 59);
+        if (Opcion == 0)
+        {
+            ListaCompras = await compraservice.Listar(t => t.FechaCompra >= Desde && t.FechaCompra <= Hasta);
+        }
+        if (Opcion == 1)
+        {
+            if (ComprassId <= 0)
+                ListaCompras = await compraservice.Listar(t => true);
+            else
+                ListaCompras = await compraservice.Listar(t => t.ComprasId == ComprassId && t.FechaCompra >= Desde && t.FechaCompra <= Hasta);
+        }
+        if (Opcion == 2)
+        {
+            if (string.IsNullOrEmpty(Descripcion))
+            {
+                ListaCompras = await compraservice.Listar(t => true);
+            }
+            else
+            {
+                ListaCompras = await compraservice.Listar(t => t.Descripcion.ToLower().Contains(Descripcion.ToLower()) && t.FechaCompra >= Desde && t.FechaCompra <= Hasta);
+            }
+        }
+    }
+}

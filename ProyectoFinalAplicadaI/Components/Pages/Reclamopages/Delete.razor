@@ -1,0 +1,87 @@
+﻿@page "/DeleteReclamo"
+@page "/DeleteReclamo/{ReclamoId:int}"
+@inject NavigationManager Navigation
+@inject ReclamoService reclamoservice
+@inject ClienteService clienteservice
+@rendermode InteractiveServer
+
+<PageTitle>Eliminar Reclamo</PageTitle>
+<div class="card">
+    <div class="card-header bg-danger text-light">
+        <h1 class="mb-0">¿Desea Eliminar este Reclamo?</h1>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Detalles del Reclamo</h5>
+        <dl class="row">
+            <dt class="col-sm-3">ReclamoId:</dt>
+            <dd class="col-sm-9">@reclamo.ReclamoId</dd>
+
+            <dt class="col-sm-3">Fecha del Reclamo:</dt>
+            <dd class="col-sm-9">@reclamo.FechaReclamo.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">@ObtenerEmailCliente(reclamo.ClienteId)</dd>
+
+            <dt class="col-sm-3">Descripci&oacute;n:</dt>
+            <dd class="col-sm-9">@reclamo.Descripcion</dd>
+
+            <dt class="col-sm-3">Acci&oacute;n Tomada:</dt>
+            <dd class="col-sm-9">@reclamo.AccionTomada</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a href="/IndexReclamo" class="btn btn-outline-primary bi bi bi-arrow-return-left"> Volver</a>
+        <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ReclamoId { get; set; }
+    public Reclamos reclamo { get; set; } = new Reclamos();
+    public List<Clientes> ListaClientes { get; set; } = new List<Clientes>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReclamoId > 0)
+        {
+            reclamo.ReclamoId = ReclamoId;
+            await this.Buscar();
+        }
+
+        ListaClientes = await clienteservice.Listar(t => true);
+    }
+    public async Task Buscar()
+    {
+        var reclamoEncontrado = await reclamoservice.Buscar(reclamo.ReclamoId);
+
+        if (reclamoEncontrado != null)
+        {
+            this.reclamo = reclamoEncontrado;
+        }
+    }
+
+    public async Task Eliminar()
+    {
+        if (!await reclamoservice.Existe(reclamo.ReclamoId))
+        {
+            return;
+        }
+        if (await reclamoservice.Eliminar(this.reclamo))
+        {
+            Atras();
+        }
+    }
+
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexReclamo");
+    }
+
+    public string ObtenerEmailCliente(int cliente)
+    {
+        var Email = ListaClientes.FirstOrDefault(c => c.ClienteId == cliente);
+        return Email != null ? Email.Email : string.Empty;
+    }
+}
+

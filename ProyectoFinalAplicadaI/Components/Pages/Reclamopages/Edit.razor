@@ -1,0 +1,103 @@
+﻿@page "/EditReclamo"
+@page "/EditReclamo/{ReclamoId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject ReclamoService reclamoservice
+@inject ClienteService clienteservice
+
+<PageTitle>Edición de Reclamos</PageTitle>
+<EditForm Model="reclamo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h3>Editar Reclamo</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="row">
+                    <div class="col col-6">
+                        <label>Fecha del Reclamo:</label>
+                        <InputDate @bind-Value="reclamo.FechaReclamo" class="form-control"></InputDate>
+                        <ValidationMessage For="(() => reclamo.FechaReclamo)"></ValidationMessage>
+                    </div>
+                    <div class="col col-6">
+                        <label>Cliente a Reclamar:</label>
+                        <InputSelect @bind-Value="reclamo.ClienteId" class="form-select">
+                            <option value="0" selected disabled>Seleccione...</option>
+                            @foreach (var item in listaCliente)
+                            {
+                                <option value="@item.ClienteId">@item.Email</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="(() => reclamo.ClienteId)"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Descripci&oacute;n:</label>
+                        <InputTextArea @bind-Value="reclamo.Descripcion" class="form-control"></InputTextArea>
+                        <ValidationMessage For="(() => reclamo.Descripcion)"></ValidationMessage>
+                    </div>
+                    <div>
+                        <label>Acci&oacute;n Tomada:</label>
+                        <InputTextArea @bind-Value="reclamo.AccionTomada" class="form-control"></InputTextArea>
+                        <ValidationMessage For="(() => reclamo.AccionTomada)"></ValidationMessage>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexReclamo" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ReclamoId { get; set; }
+    public Reclamos reclamo { get; set; } = new Reclamos();
+    public List<Clientes> listaCliente { get; set; } = new List<Clientes>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReclamoId > 0)
+        {
+            this.reclamo.ReclamoId = ReclamoId;
+            await this.Buscar();
+        }
+        listaCliente = await clienteservice.Listar(t => true);
+        reclamo.FechaReclamo = DateTime.Now;
+    }
+
+    public async Task Buscar()
+    {
+        var reclamoEncontrado = await reclamoservice.Buscar(reclamo.ReclamoId);
+
+        if (reclamoEncontrado != null)
+        {
+            this.reclamo = reclamoEncontrado;
+        }
+    }
+    public async Task Guardar()
+    {
+        if (reclamo.ReclamoId<= 0 || reclamo.ClienteId <= 0)
+        {
+            return;
+        }
+        else
+        {
+            var guardo = await reclamoservice.Guardar(reclamo);
+            if (guardo)
+            {
+                Atras();
+            }
+        }
+    }
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexReclamo");
+    }
+}
