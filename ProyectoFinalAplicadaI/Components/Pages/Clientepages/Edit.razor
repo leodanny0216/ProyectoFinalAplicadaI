@@ -1,0 +1,93 @@
+﻿@page "/EditCliente"
+@page "/EditCliente/{ClienteId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject ClienteService clienteservice
+
+<PageTitle>Edición del Clientes</PageTitle>
+<EditForm Model="cliente" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Editar Cliente</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col col-6">
+                <label>ClienteId:</label>
+                <InputNumber @bind-Value="cliente.ClienteId" class="form-control"></InputNumber>
+                <ValidationMessage For="(() => cliente.ClienteId)"></ValidationMessage>
+                </div>
+                <div class="col col-6">
+                    <label>Nombre:</label>
+                    <InputText @bind-Value="cliente.Nombre" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => cliente.Nombre)" />
+                </div>
+                <div class="col col-6">
+                    <label>Fecha:</label>
+                    <InputDate @bind-Value="cliente.FechaRegistro" class="form-control"></InputDate>
+                    <ValidationMessage For="(() => cliente.FechaRegistro)"></ValidationMessage>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-6">
+                    <label>C&eacute;dula:</label>
+                    <InputText @bind-Value="cliente.Cedula" class="form-control"></InputText>
+                    <ValidationMessage For="(() => cliente.Cedula)"></ValidationMessage>
+                </div>
+                <div class="col col-6">
+                    <label>Tel&eacute;fono:</label>
+                    <InputText @bind-Value="cliente.Telefono" class="form-control"></InputText>
+                    <ValidationMessage For="(() => cliente.Telefono)"></ValidationMessage>
+                </div>
+            </div>
+            <div>
+                <label>Email:</label>
+                <InputText @bind-Value="cliente.Email" class="form-control"></InputText>
+                <ValidationMessage For="@(() => cliente.Email)" />
+            </div>
+            <div>
+                <label>Direcci&oacuten:</label>
+                <InputText @bind-Value="cliente.Direccion" class="form-control"></InputText>
+                <ValidationMessage For="@(() => cliente.Direccion)" />
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexCliente" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ClienteId { get; set; }
+    public Clientes cliente { get; set; } = new Clientes();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ClienteId > 0)
+        {
+            this.cliente.ClienteId = ClienteId;
+            var clienteEncontrado = await clienteservice.Buscar(cliente.ClienteId);
+
+            if (clienteEncontrado != null)
+            {
+                this.cliente = clienteEncontrado;
+            }
+        }
+    }
+    public async Task Guardar()
+    {
+        var guardo = await clienteservice.Guardar(cliente);
+        if (guardo)
+            Atras();
+    }
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexCliente");
+    }
+}
