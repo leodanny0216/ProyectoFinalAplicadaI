@@ -1,0 +1,74 @@
+﻿@page "/CreateInsumo"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject InsumoService insumoService
+
+<PageTitle>Registro de Insumos</PageTitle>
+<EditForm Model="insumo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Registro de Insumos</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col col-4">
+                    <label>Nombre Insumo:</label>
+                    <InputText @bind-Value="insumo.NombreInsumo" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => insumo.NombreInsumo)" />
+                </div>
+                <div class="col col-4">
+                    <label>Fecha:</label>
+                    <InputDate @bind-Value="insumo.fechaRegistro" class="form-control"></InputDate>
+                    <ValidationMessage For="(() => insumo.fechaRegistro)"></ValidationMessage>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col col-4">
+                    <label>Precio:</label>
+                    <InputNumber @bind-Value="insumo.Precio" class="form-control"></InputNumber>
+                    <ValidationMessage For="(() => insumo.Precio)"></ValidationMessage>
+                </div>
+                <div class="col col-8">
+                    <label>Descripci&oacute;n:</label>
+                    <InputText @bind-Value="insumo.Descripcion" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => insumo.Descripcion)" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexInsumo" class="btn btn-outline-danger bi bi-arrow-return-left"> Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy-fill"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Insumos insumo { get; set; } = new Insumos();
+
+    protected override async Task OnInitializedAsync()
+    {
+        insumo.Cantidad = 0;
+        insumo.fechaRegistro = DateTime.Now;
+    }
+
+    public async Task Guardar()
+    {
+        var guardo = await insumoService.Guardar(insumo);
+        if (guardo)
+        {
+            await Task.Delay(3000);
+            Atras();
+        }
+    }
+
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexInsumo");
+    }
+}
