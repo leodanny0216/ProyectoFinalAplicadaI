@@ -1,0 +1,153 @@
+﻿@page "/IndexCliente"
+@page "/IndexCliente/{ClienteId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject ClienteService clienteservice
+
+<PageTitle>Detalles de Clientes</PageTitle>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Detalles de Clientes</h3>
+        <a href="/CreateCliente" class="btn btn-outline-primary bi bi-plus-square">  Crear</a>
+    </div>
+    <div class="card-body">
+
+        <div class="input-group-text">
+
+            <label class="form-control-label col-1">Desde:</label>
+            <div class="col-3">
+                <input class="form-control" type="date" @bind="Desde" />
+            </div>
+
+            <label class="form-control-label col-1">Hasta:</label>
+            <div class="col-3">
+                <input class="form-control" type="date" @bind="Hasta" />
+            </div>
+
+            <div class="col-5">
+                <button type="button" @onclick="Buscar" class="btn btn-primary  ">
+                    <i class="bi bi-search" />
+                    <br /> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <label>Filtrar Por</label>
+                <InputSelect @bind-Value="Opcion" class="form-select">
+                    <option value="0" selected disabled>Seleccione</option>
+                    <option value="1">ClienteId</option>
+                    <option value="2">Nombre</option>
+                </InputSelect>
+            </div>
+
+            @if (Opcion == 1)
+            {
+                <div class="col-3">
+                    <label>ID</label>
+                    <div class="input-group">
+                        <InputNumber @bind-Value="ClientesId" class="form-control"></InputNumber>
+                    </div>
+                </div>
+            }
+            else if (Opcion == 2)
+            {
+                <div class="col-3">
+                    <label>Nombre</label>
+                    <div class="input-group">
+                        <InputText @bind-Value="Nombre" class="form-control"></InputText>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center">ID</th>
+                    <th scope="col" class="text-center">Nombres</th>
+                    <th scope="col" class="text-center">Tel&eacute;fono</th>
+                    <th scope="col" class="text-center">C&eacute;dula</th>
+                    <th scope="col" class="text-center">Email</th>
+                    <th scope="col" class="text-center">Direcci&oacuten</th>
+                    <th scope="col" class="text-center">Fecha</th>
+                    <th scope="col" class="text-center">Editar</th>
+                    <th scope="col" class="text-center">Eliminar</th>
+                    <th scope="col" class="text-center">Ver</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cliente in ListaClientes)
+                {
+                    <tr>
+                        <td class="text-center">@cliente.ClienteId</td>
+                        <td class="text-center">@cliente.Nombre</td>
+                        <td class="text-center">@string.Format("{0:(###) ###-####}", long.Parse(cliente.Telefono))</td>
+                        <td class="text-center">@string.Format("{0:###-#######-#}", long.Parse(cliente.Cedula))</td>
+                        <td class="text-center">@cliente.Email</td>
+                        <td class="text-center">@cliente.Direccion</td>
+                        <td class="text-center">@cliente.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center"><a href="/EditCliente/@cliente.ClienteId" class="bi bi-pencil-square"></a></td>
+                        <td class="text-center"><a href="/DeleteCliente/@cliente.ClienteId" class="bi bi-trash"></a></td>
+                        <td class="text-center"><a href="/ViewCliente/@cliente.ClienteId" class="bi bi-eye"></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="card-footer fw-bold">
+            <p>Cantidad de Clientes: @ListaClientes.Count</p>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a href="/" class="btn btn-outline-danger bi bi-house-door-fill"> Volver</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ClienteId { get; set; }
+    public Clientes cliente { get; set; } = new Clientes();
+    public List<Clientes> ListaClientes { get; set; } = new List<Clientes>();
+    public int Opcion = 0;
+    public string Nombre { get; set; }
+    public int ClientesId { get; set; }
+    public DateTime Desde { get; set; }
+    public DateTime Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaClientes = await clienteservice.Listar(t => true);
+        Desde = DateTime.Now.AddMonths(-1);
+        Hasta = DateTime.Now;
+    }
+    public async Task Buscar()
+    {
+        Hasta = new DateTime(Hasta.Year, Hasta.Month, Hasta.Day, 23, 59, 59);
+        if (Opcion == 0)
+        {
+            ListaClientes = await clienteservice.Listar(t => t.FechaRegistro >= Desde && t.FechaRegistro <= Hasta);
+        }
+        if (Opcion == 1)
+        {
+            if (ClientesId <= 0)
+                ListaClientes = await clienteservice.Listar(t => true);
+            else
+                ListaClientes = await clienteservice.Listar(t => t.ClienteId == ClientesId && t.FechaRegistro >= Desde && t.FechaRegistro <= Hasta);
+        }
+        if (Opcion == 2)
+        {
+            if (string.IsNullOrEmpty(Nombre))
+            {
+                ListaClientes = await clienteservice.Listar(t => true);
+            }
+            else
+            {
+                ListaClientes = await clienteservice.Listar(t => t.Nombre.ToLower().Contains(Nombre.ToLower()) && t.FechaRegistro >= Desde && t.FechaRegistro <= Hasta);
+            }
+        }
+    }
+}
