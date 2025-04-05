@@ -1,0 +1,81 @@
+﻿@page "/DeleteInsumo"
+@page "/DeleteInsumo/{InsumoId:int}"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject InsumoService insumoService
+
+<PageTitle>Eliminar Insumo</PageTitle>
+
+<div class="card">
+    <div class="card-header bg-danger text-light">
+        <h1 class="mb-0">¿Desea Eliminar este Insumo?</h1>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Detalles del Insumo:</h5>
+        <dl class="row">
+            <dt class="col-sm-3">InsumosId:</dt>
+            <dd class="col-sm-9">@insumo.InsumosId</dd>
+
+            <dt class="col-sm-3">Nombre Insumo:</dt>
+            <dd class="col-sm-9">@insumo.NombreInsumo</dd>
+
+            <dt class="col-sm-3">Descripci&oacute;n:</dt>
+            <dd class="col-sm-9">@insumo.Descripcion</dd>
+
+            <dt class="col-sm-3">Cantidad:</dt>
+            <dd class="col-sm-9">@insumo.Cantidad </dd>
+
+            <dt class="col-sm-3">Precio:</dt>
+            <dd class="col-sm-9">@insumo.Precio</dd>
+
+            <dt class="col-sm-3">Fecha Registro:</dt>
+            <dd class="col-sm-9">@insumo.fechaRegistro.ToString("dd/MM/yyyy")</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a href="/IndexInsumo" class="btn btn-outline-primary bi bi bi-arrow-return-left"> Volver</a>
+        <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int InsumoId { get; set; }
+    public Insumos insumo { get; set; } = new Insumos();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (InsumoId > 0)
+        {
+            insumo.InsumosId = InsumoId;
+            await this.Buscar();
+        }
+    }
+
+    public async Task Buscar()
+    {
+        var clienteEncontrado = await insumoService.Buscar(insumo.InsumosId);
+
+        if (clienteEncontrado != null)
+        {
+            this.insumo = clienteEncontrado;
+        }
+    }
+
+    public async Task Eliminar()
+    {
+        if (!await insumoService.Existe(insumo.InsumosId))
+        {
+            return;
+        }
+        if (await insumoService.Eliminar(this.insumo))
+        {
+            Atras();
+        }
+    }
+
+    void Atras()
+    {
+        Navigation.NavigateTo("/IndexInsumo");
+    }
+}
