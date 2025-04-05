@@ -12,7 +12,7 @@ using ProyectoFinalAplicadaI.Data;
 namespace ProyectoFinalAplicadaI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250405033241_Inicial")]
+    [Migration("20250405044305_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -223,6 +223,149 @@ namespace ProyectoFinalAplicadaI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.Clientes", b =>
+                {
+                    b.Property<int>("ClienteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClienteId"));
+
+                    b.Property<string>("Cedula")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("ClienteId");
+
+                    b.ToTable("Clientes");
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.Compras", b =>
+                {
+                    b.Property<int>("ComprasId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComprasId"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaCompra")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ComprasId");
+
+                    b.ToTable("Compras");
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.ComprasDetalle", b =>
+                {
+                    b.Property<int>("ComprasDetalleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComprasDetalleId"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ComprasId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImagenURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InsumoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ComprasDetalleId");
+
+                    b.HasIndex("ComprasId");
+
+                    b.ToTable("ComprasDetalles");
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.Insumos", b =>
+                {
+                    b.Property<int>("InsumosId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InsumosId"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NombreInsumo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Precio")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("fechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("InsumosId");
+
+                    b.ToTable("Insumos");
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.Reclamos", b =>
+                {
+                    b.Property<int>("ReclamoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReclamoId"));
+
+                    b.Property<string>("AccionTomada")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaReclamo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ReclamoId");
+
+                    b.ToTable("Reclamos");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -272,6 +415,18 @@ namespace ProyectoFinalAplicadaI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.ComprasDetalle", b =>
+                {
+                    b.HasOne("ProyectoFinalAplicadaI.Models.Compras", null)
+                        .WithMany("ComprasDetalle")
+                        .HasForeignKey("ComprasId");
+                });
+
+            modelBuilder.Entity("ProyectoFinalAplicadaI.Models.Compras", b =>
+                {
+                    b.Navigation("ComprasDetalle");
                 });
 #pragma warning restore 612, 618
         }
