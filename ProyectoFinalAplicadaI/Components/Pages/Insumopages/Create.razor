@@ -3,39 +3,113 @@
 @inject NavigationManager Navigation
 @inject InsumoService insumoService
 
-<PageTitle>Registro de Insumos</PageTitle>
+<PageTitle>Crear Insumo</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .card-header h3 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    label {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+
+    .btn-outline-success {
+        background-color: #ffffff;
+        color: #388e3c;
+        border: 2px solid #388e3c;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #388e3c;
+        color: #fff;
+    }
+
+    .input-group {
+        justify-content: space-between;
+    }
+
+    .validation-message {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+</style>
+
 <EditForm Model="insumo" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-
-    <div class="card">
+    <div class="card shadow">
         <div class="card-header">
-            <h3>Registro de Insumos</h3>
+            <h3>📦 Crear Insumo</h3>
         </div>
         <div class="card-body">
-            <div class="row">
-
+            <div class="row mb-3">
                 <div class="col col-4">
                     <label>Nombre Insumo:</label>
                     <InputText @bind-Value="insumo.NombreInsumo" class="form-control"></InputText>
-                    <ValidationMessage For="@(() => insumo.NombreInsumo)" />
+                    <ValidationMessage For="@(() => insumo.NombreInsumo)" class="validation-message" />
                 </div>
                 <div class="col col-4">
                     <label>Fecha:</label>
                     <InputDate @bind-Value="insumo.fechaRegistro" class="form-control"></InputDate>
-                    <ValidationMessage For="(() => insumo.fechaRegistro)"></ValidationMessage>
+                    <ValidationMessage For="(() => insumo.fechaRegistro)" class="validation-message"></ValidationMessage>
+                </div>
+                <div class="col col-4">
+                    <label>Cantidad:</label>
+                    <InputNumber @bind-Value="insumo.Cantidad" class="form-control"></InputNumber>
                 </div>
             </div>
-            <div class="row">
-
+            <div class="row mb-3">
                 <div class="col col-4">
                     <label>Precio:</label>
                     <InputNumber @bind-Value="insumo.Precio" class="form-control"></InputNumber>
-                    <ValidationMessage For="(() => insumo.Precio)"></ValidationMessage>
+                    <ValidationMessage For="(() => insumo.Precio)" class="validation-message"></ValidationMessage>
                 </div>
                 <div class="col col-8">
-                    <label>Descripci&oacute;n:</label>
+                    <label>Descripción:</label>
                     <InputText @bind-Value="insumo.Descripcion" class="form-control"></InputText>
-                    <ValidationMessage For="@(() => insumo.Descripcion)" />
+                    <ValidationMessage For="@(() => insumo.Descripcion)" class="validation-message" />
                 </div>
             </div>
         </div>

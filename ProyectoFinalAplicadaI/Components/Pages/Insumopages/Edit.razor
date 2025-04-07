@@ -5,16 +5,65 @@
 @inject InsumoService insumoService
 
 <PageTitle>Editor de Insumos</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1; /* Color de fondo azul */
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+    }
+
+    .card-footer {
+        background-color: #e1f5fe; /* Color de fondo claro */
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0277bd;
+        border-color: #0277bd;
+    }
+
+    .btn-outline-success {
+        background-color: #ffffff;
+        color: #4caf50; /* Color verde */
+        border: 2px solid #4caf50;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #4caf50;
+        color: #fff;
+    }
+</style>
+
 <EditForm Model="insumo" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
 
-    <div class="card">
+    <div class="card shadow-lg">
         <div class="card-header">
             <h3>Editar Insumo</h3>
         </div>
+
         <div class="card-body">
-            <div class="row">
-               
+            <div class="row mb-3">
                 <div class="col col-4">
                     <label>Nombre Insumo:</label>
                     <InputText @bind-Value="insumo.NombreInsumo" class="form-control"></InputText>
@@ -25,21 +74,27 @@
                     <InputDate @bind-Value="insumo.fechaRegistro" class="form-control"></InputDate>
                     <ValidationMessage For="(() => insumo.fechaRegistro)"></ValidationMessage>
                 </div>
-            </div>
-            <div class="row">
 
+                <div class="col col-4">
+                    <label>Cantidad:</label>
+                    <InputNumber @bind-Value="insumo.Cantidad" class="form-control"></InputNumber>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col col-4">
                     <label>Precio:</label>
                     <InputNumber @bind-Value="insumo.Precio" class="form-control"></InputNumber>
                     <ValidationMessage For="(() => insumo.Precio)"></ValidationMessage>
                 </div>
                 <div class="col col-8">
-                    <label>Descripci&oacute;n:</label>
+                    <label>Descripción:</label>
                     <InputText @bind-Value="insumo.Descripcion" class="form-control"></InputText>
                     <ValidationMessage For="@(() => insumo.Descripcion)" />
                 </div>
             </div>
         </div>
+
         <div class="card-footer">
             <div class="input-group">
                 <a href="/IndexInsumo" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>

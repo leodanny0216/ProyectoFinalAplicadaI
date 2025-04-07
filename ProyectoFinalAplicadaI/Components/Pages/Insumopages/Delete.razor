@@ -6,8 +6,56 @@
 
 <PageTitle>Eliminar Insumo</PageTitle>
 
-<div class="card">
-    <div class="card-header bg-danger text-light">
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #d32f2f; /* Color de fondo rojo */
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+    }
+
+    .card-footer {
+        background-color: #e1f5fe; /* Color de fondo claro */
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0277bd;
+        border-color: #0277bd;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+</style>
+
+<div class="card shadow-lg">
+    <div class="card-header">
         <h1 class="mb-0">¿Desea Eliminar este Insumo?</h1>
     </div>
     <div class="card-body">
@@ -19,11 +67,11 @@
             <dt class="col-sm-3">Nombre Insumo:</dt>
             <dd class="col-sm-9">@insumo.NombreInsumo</dd>
 
-            <dt class="col-sm-3">Descripci&oacute;n:</dt>
+            <dt class="col-sm-3">Descripción:</dt>
             <dd class="col-sm-9">@insumo.Descripcion</dd>
 
             <dt class="col-sm-3">Cantidad:</dt>
-            <dd class="col-sm-9">@insumo.Cantidad </dd>
+            <dd class="col-sm-9">@insumo.Cantidad</dd>
 
             <dt class="col-sm-3">Precio:</dt>
             <dd class="col-sm-9">@insumo.Precio</dd>
@@ -32,9 +80,11 @@
             <dd class="col-sm-9">@insumo.fechaRegistro.ToString("dd/MM/yyyy")</dd>
         </dl>
     </div>
-    <div class="card-footer">
-        <a href="/IndexInsumo" class="btn btn-outline-primary bi bi bi-arrow-return-left"> Volver</a>
-        <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="input-group">
+            <a href="/IndexInsumo" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+        </div>
     </div>
 </div>
 
@@ -54,11 +104,11 @@
 
     public async Task Buscar()
     {
-        var clienteEncontrado = await insumoService.Buscar(insumo.InsumosId);
+        var insumoEncontrado = await insumoService.Buscar(insumo.InsumosId);
 
-        if (clienteEncontrado != null)
+        if (insumoEncontrado != null)
         {
-            this.insumo = clienteEncontrado;
+            this.insumo = insumoEncontrado;
         }
     }
 
