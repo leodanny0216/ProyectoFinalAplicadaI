@@ -12,55 +12,107 @@
 
 <PageTitle>Log in</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-lg-6">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <h2>Use a local account to log in.</h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="Input.Email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="Input.Password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </EditForm>
-        </section>
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card-login {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
+        color: #000;
+        max-width: 600px;
+        margin: auto;
+        margin-top: 5rem;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+    label {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control, .form-check-input {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        background-color: #039be5;
+        border-color: #0288d1;
+        color: white;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+        .btn-primary:hover {
+            background-color: #0277bd;
+        }
+
+    .form-links a {
+        color: #01579b;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="card-login">
+    <div class="card-header">
+        <h2>🔐 Iniciar Sesión</h2>
     </div>
-    <div class="col-lg-4 col-lg-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr />
-            <ExternalLoginPicker />
-        </section>
+    <div class="card-body mt-3">
+        <StatusMessage Message="@errorMessage" />
+        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <div class="mb-3">
+                <label for="Input.Email" class="form-label">Email</label>
+                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" placeholder="correo@ejemplo.com" />
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Input.Password" class="form-label">Contraseña</label>
+                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="current-password" placeholder="contraseña" />
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+
+            <div class="mb-3 form-check">
+                <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" id="RememberMe" />
+                <label for="RememberMe" class="form-check-label">Recuérdame</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+
+            <div class="mt-4 form-links text-center">
+                <p><a href="Account/ForgotPassword">¿Olvidaste tu contraseña?</a></p>
+                <p><a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Registrarse como nuevo usuario</a></p>
+                <p><a href="Account/ResendEmailConfirmation">Reenviar confirmación por correo</a></p>
+            </div>
+        </EditForm>
     </div>
 </div>
 
@@ -80,7 +132,6 @@
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
@@ -91,12 +142,12 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            NavigationManager.NavigateTo("/menu"); // Redirige al menú después de un login exitoso
+            NavigationManager.NavigateTo("/menu");
         }
         else if (result.RequiresTwoFactor)
         {
             RedirectManager.RedirectTo(
-                "/menu", // Puedes cambiar esto si necesitas una página especial para 2FA
+                "/menu",
                 new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
         }
         else if (result.IsLockedOut)
@@ -106,10 +157,9 @@
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = "❌ Error: Intento de inicio de sesión inválido.";
         }
     }
-
 
     private sealed class InputModel
     {

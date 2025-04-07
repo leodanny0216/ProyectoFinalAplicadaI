@@ -49,6 +49,8 @@ public class Program
             .AddSignInManager()
             .AddDefaultTokenProviders();
 
+        builder.Services.AddBlazorBootstrap();
+
         // Registro de servicios personalizados
         builder.Services.AddScoped<ClienteService>();
         builder.Services.AddScoped<CompraService>();
