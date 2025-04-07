@@ -1,31 +1,102 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigationManager
 
-<div class="page">
-    <AuthorizeView>
-        <Authorized>
-            <div class="sidebar">
-                <NavMenu />
+<link href="css/CobroCreate.css" rel="stylesheet" />
+
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+<div class="card">
+    @* Barra superior dentro del card, con menú flotante integrado *@
+    <div class="top-row px-7">
+        <a href="https://learn.microsoft.com/aspnet/core/" target="_blank"></a>
+        <div class="menu-floating custom-align">
+             @* Ítem ProyectoFinalAplicada1 a la izquierda, visible solo si el usuario está autenticado  *@
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/Menu" class="Aplicada1 Leodanny-item">
+                        <img src="/favicon.png" alt="Ícono de Menú" class="Leodanny-icon" />
+                        <span class="Proyecto-text">ProyectoFinalAplicada1</span>
+                    </a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/" class="ProyectoFinalAplicada1-item">
+                        <img src="/favicon.png" alt="Ícono de Menú" class="ProyectoFinalAplicada1" />
+                        <span class="ProyectoFinalAplicada1-text">ProyectoFinalAplicada1</span>
+                    </a>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            <div class="user-container">
+                <span class="user-name">Usuario: @userName</span> 
+                <AuthorizeView>
+                    <Authorized>
+                        <a>
+                            <form action="Account/Logout" method="post">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="" />
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-plus"></i>Cerrar Sesion
+                                </button>
+                            </form>
+                        </a>
+                    </Authorized>
+                </AuthorizeView>
             </div>
-        </Authorized>
-        <NotAuthorized>
-            @* Opcionalmente puedes mostrar algo o dejarlo vacío *@
-        </NotAuthorized>
-    </AuthorizeView>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
+    </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <div class="content" style="margin-top: 0rem; margin-bottom: 1rem;">
+        @Body
+    </div>
+</div>
+@* Nuevo card idéntico en la parte inferior *@
+<div class="card mt-5">
+    <div class="top-row px-4">
+        <footer>
+            <p> ProyectoFinalAplicada1  Leodanny Maria</p>
+        </footer>
+    </div>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; } = default!;
+    private bool IsAuthenticated { get; set; }
+    private string userName = string.Empty;
+    private string? currentUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        IsAuthenticated = authState.User.Identity.IsAuthenticated;
+
+        if (IsAuthenticated)
+        {
+            userName = authState.User.Identity.Name ?? "Usuario no disponible";
+        }
+
+        currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
+        navigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(e.Location);
+        if (currentUrl == "Account/Logout")
+        {
+            navigationManager.NavigateTo("/login");
+        }
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        navigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private void SalirMenu()
+    {
+        navigationManager.NavigateTo("/logout");
+    }
+}
