@@ -1,6 +1,86 @@
 ﻿@page "/menu"
-<h3>Menu</h3>
+@rendermode InteractiveServer
+
+<PageTitle>Menú Principal</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .menu-card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .menu-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+        .menu-header h2 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+    .menu-options {
+        margin-top: 2rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .menu-btn {
+        background-color: #039be5;
+        border: none;
+        padding: 1rem;
+        color: white;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 18px;
+        transition: background-color 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .menu-btn:hover {
+            background-color: #0277bd;
+            color: #fff;
+        }
+
+    .menu-icon {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+
+</style>
+
+<div class="menu-card">
+    <div class="menu-header">
+        <h2>📋 Menú Principal</h2>
+    </div>
+
+    <div class="menu-options">
+        <a class="menu-btn" href="/IndexReclamo"><i class="bi bi-exclamation-circle-fill menu-icon"></i> Reclamos</a>
+        <a class="menu-btn" href="/IndexInsumo"><i class="bi bi-box-fill menu-icon"></i> Insumos</a>
+        <a class="menu-btn" href="/IndexCompra"><i class="bi bi-cart-fill menu-icon"></i> Compras</a>
+        <a class="menu-btn" href="/IndexCliente"><i class="bi bi-person-fill menu-icon"></i> Clientes</a>
+    </div>
+</div>
 
 @code {
-
+    // Si necesitás lógica en el menú, podés implementarla aquí más adelante.
 }
