@@ -12,8 +12,8 @@ using ProyectoFinalAplicadaI.Data;
 namespace ProyectoFinalAplicadaI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250405044305_Inicial")]
-    partial class Inicial
+    [Migration("20250407043747_klk")]
+    partial class klk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
