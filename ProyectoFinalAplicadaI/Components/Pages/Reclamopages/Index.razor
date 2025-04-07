@@ -4,109 +4,187 @@
 @inject ReclamoService reclamoservice
 @inject ClienteService clienteservice
 
-<PageTitle>Detalles de Reclamos</PageTitle>
+<PageTitle>Consultas de Reclamos</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+    }
+
+        .card-header h3 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+    label, th {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #0277bd;
+            border-color: #0277bd;
+        }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #d32f2f;
+            color: #fff;
+        }
+
+    .btn-primary {
+        background-color: #039be5;
+        border-color: #0288d1;
+        color: white;
+    }
+
+    .table th {
+        background-color: #0288d1;
+        color: white;
+    }
+
+    .table td {
+        background-color: #e0f7fa;
+        color: #000;
+    }
+
+    .bi-pencil-square {
+        color: #fbc02d;
+    }
+
+    .bi-trash {
+        color: #d32f2f;
+    }
+
+    .bi-eye {
+        color: #039be5;
+    }
+</style>
 
 <div class="card shadow">
-    <div class="card-header">
-        <h3>Detalles de Reclamos</h3>
-        <a href="/CreateReclamo" class="btn btn-outline-primary bi bi-plus-square">  Crear</a>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>📋Consultas de Reclamos</h3>
+        <a href="/CreateReclamo" class="btn btn-outline-primary bi bi-plus-square"> Crear</a>
     </div>
+
     <div class="card-body">
-
-        <div class="input-group-text">
-
-            <label class="form-control-label col-1">Desde:</label>
-            <div class="col-3">
+        <!-- Filtro por fechas -->
+        <div class="row mb-3 g-3 align-items-end">
+            <div class="col-md-3">
+                <label>Desde:</label>
                 <input class="form-control" type="date" @bind="Desde" />
             </div>
-
-            <label class="form-control-label col-1">Hasta:</label>
-            <div class="col-3">
+            <div class="col-md-3">
+                <label>Hasta:</label>
                 <input class="form-control" type="date" @bind="Hasta" />
             </div>
-
-            <div class="col-5">
-                  <button type="button" @onclick="Buscar" class="btn btn-primary  ">
-                <i class="bi bi-search" />
-                <br /> Buscar
+            <div class="col-md-3">
+                <button type="button" @onclick="Buscar" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i>Buscar
                 </button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-3">
-                <label>Filtrar Por</label>
+
+        <!-- Filtro por tipo -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <label>Filtrar Por:</label>
                 <InputSelect @bind-Value="Opcion" class="form-select">
-                    <option value="0" selected disabled>Seleccione</option>
-                    <option value="1">ReclamoId</option>
-                    <option value="2">Descripci&oacute;n</option>
+                    <option value="0" selected disabled>Seleccione...</option>
+                    <option value="1">Reclamo ID</option>
+                    <option value="2">Descripción</option>
                 </InputSelect>
             </div>
 
             @if (Opcion == 1)
             {
-                <div class="col-3">
-                    <label>ID</label>
-                    <div class="input-group">
-                        <InputNumber @bind-Value="ReclamosId" class="form-control"></InputNumber>
-                    </div>
+                <div class="col-md-3">
+                    <label>ID:</label>
+                    <InputNumber @bind-Value="ReclamosId" class="form-control"></InputNumber>
                 </div>
             }
             else if (Opcion == 2)
             {
-                <div class="col-3">
-                    <label>Descripci&oacute;n</label>
-                    <div class="input-group">
-                        <InputText @bind-Value="Descripcion" class="form-control"></InputText>
-                    </div>
+                <div class="col-md-3">
+                    <label>Descripción:</label>
+                    <InputText @bind-Value="Descripcion" class="form-control"></InputText>
                 </div>
             }
         </div>
-    </div>
-    <table class="table table-light table-hover table-striped table-bordered ">
-        <thead>
-            <tr>
-                <th scope="col" class="text-center">Id</th>
-                <th scope="col" class="text-center">Email</th>
-                <th scope="col" class="text-center">Descripci&oacute;n</th>
-                <th scope="col" class="text-center">Acci&oacute;n Tomada</th>
-                <th scope="col" class="text-center">Fecha Reclamo</th>
-                <th scope="col" class="text-center">Editar</th>
-                <th scope="col" class="text-center">Eliminar</th>
-                <th scope="col" class="text-center">Ver</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var reclamo in ListaReclamos)
-            {
-                <tr>
-                    <td class="text-center">@reclamo.ReclamoId</td>
-                    <td class="text-center">@ObtenerEmailCliente(reclamo.ClienteId)</td>
-                    <td class="text-center">@reclamo.Descripcion</td>
-                    <td class="text-center">@reclamo.AccionTomada</td
-                    <td class="text-center">@reclamo.FechaReclamo.ToString("dd/MM/yyyy")</td>
-                    <td class="text-center"><a href="/EditReclamo/@reclamo.ReclamoId" class="bi bi-pencil-square"></a></td>
-                    <td class="text-center"><a href="/DeleteReclamo/@reclamo.ReclamoId" class="bi bi-trash"></a></td>
-                    <td class="text-center"><a href="/ViewReclamo/@reclamo.ReclamoId" class="bi bi-eye"></a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-    <div class="card-footer fw-bold">
-        <p>Cantidad de Reclamos: @ListaReclamos.Count</p>
-    </div>
-    <div class="card-footer">
-        <a href="/" class="btn btn-outline-danger bi bi-house-door-fill"> Volver</a>
+        <!-- Tabla -->
+        <div class="table-responsive rounded-3 shadow mt-4">
+            <table class="table table-bordered table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Descripción</th>
+                        <th>Acción Tomada</th>
+                        <th>Fecha Reclamo</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reclamo in ListaReclamos)
+                    {
+                        <tr>
+                            <td>@reclamo.ReclamoId</td>
+                            <td>@ObtenerEmailCliente(reclamo.ClienteId)</td>
+                            <td>@reclamo.Descripcion</td>
+                            <td>@reclamo.AccionTomada</td>
+                            <td>@reclamo.FechaReclamo.ToString("dd/MM/yyyy")</td>
+                            <td><a href="/EditReclamo/@reclamo.ReclamoId" class="bi bi-pencil-square"></a></td>
+                            <td><a href="/DeleteReclamo/@reclamo.ReclamoId" class="bi bi-trash"></a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 @code {
     public List<Reclamos> ListaReclamos = new List<Reclamos>();
     public Reclamos reclamo = new Reclamos();
     public int Opcion = 0;
     public int ReclamosId { get; set; }
-    
     public string Descripcion { get; set; }
     public DateTime Desde { get; set; }
     public DateTime Hasta { get; set; }
@@ -117,7 +195,7 @@
         ListaReclamos = await reclamoservice.Listar(t => true);
         Desde = DateTime.Now.AddMonths(-1);
         Hasta = DateTime.Now;
-          ListaClientes = await clienteservice.Listar(t => true);
+        ListaClientes = await clienteservice.Listar(t => true);
     }
 
     public async Task Buscar()
@@ -127,27 +205,21 @@
         {
             ListaReclamos = await reclamoservice.Listar(t => t.FechaReclamo >= Desde && t.FechaReclamo <= Hasta);
         }
-        if (Opcion == 1)
+        else if (Opcion == 1)
         {
-            if (ReclamosId <= 0)
-                ListaReclamos = await reclamoservice.Listar(t => true);
-            else
-                ListaReclamos = await reclamoservice.Listar(t => t.ReclamoId == ReclamosId && t.FechaReclamo >= Desde && t.FechaReclamo <= Hasta);
+            ListaReclamos = ReclamosId <= 0
+                ? await reclamoservice.Listar(t => true)
+                : await reclamoservice.Listar(t => t.ReclamoId == ReclamosId && t.FechaReclamo >= Desde && t.FechaReclamo <= Hasta);
         }
-        if (Opcion == 2)
+        else if (Opcion == 2)
         {
-            if (string.IsNullOrEmpty(Descripcion))
-            {
-                ListaReclamos = await reclamoservice.Listar(t => true);
-            }
-            else
-            {
-                ListaReclamos = await reclamoservice.Listar(t => t.Descripcion.ToLower().Contains(Descripcion.ToLower()) && t.FechaReclamo >= Desde && t.FechaReclamo <= Hasta);
-            }
+            ListaReclamos = string.IsNullOrEmpty(Descripcion)
+                ? await reclamoservice.Listar(t => true)
+                : await reclamoservice.Listar(t => t.Descripcion.ToLower().Contains(Descripcion.ToLower()) && t.FechaReclamo >= Desde && t.FechaReclamo <= Hasta);
         }
     }
-    
-     public string ObtenerEmailCliente(int cliente)
+
+    public string ObtenerEmailCliente(int cliente)
     {
         var Email = ListaClientes.FirstOrDefault(c => c.ClienteId == cliente);
         return Email != null ? Email.Email : string.Empty;
