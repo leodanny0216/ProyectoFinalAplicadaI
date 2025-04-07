@@ -6,45 +6,155 @@
 
 <PageTitle>Eliminar Cliente</PageTitle>
 
-<div class="card">
-    <div class="card-header bg-danger text-light">
-        <h1 class="mb-0">¿Desea Eliminar este Cliente?</h1>
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #d32f2f;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+    .card-title {
+        color: #01579b;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    dt {
+        color: #0288d1;
+        font-weight: bold;
+    }
+
+    dd {
+        color: #000;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #0277bd;
+            border-color: #0277bd;
+        }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #d32f2f;
+            color: #fff;
+        }
+
+    .input-group {
+        justify-content: space-between;
+    }
+</style>
+
+@if (cliente != null)
+{
+    <div class="card shadow">
+        <div class="card-header">
+            <h1>🗑️ ¿Desea Eliminar este Cliente?</h1>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Detalles del Cliente</h5>
+            <dl class="row">
+                <dt class="col-sm-3">ClienteId:</dt>
+                <dd class="col-sm-9">@cliente.ClienteId</dd>
+
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9">@cliente.Nombre</dd>
+
+                <dt class="col-sm-3">Teléfono:</dt>
+                <dd class="col-sm-9">
+                    @{
+                        if (!string.IsNullOrEmpty(cliente.Telefono))
+                        {
+                            long telefono;
+                            if (long.TryParse(cliente.Telefono, out telefono))
+                            {
+                                @string.Format("{0:(###) ###-####}", telefono)
+                            }
+                            else
+                            {
+                                @cliente.Telefono
+                            }
+                        }
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Cédula:</dt>
+                <dd class="col-sm-9">
+                    @{
+                        if (!string.IsNullOrEmpty(cliente.Cedula))
+                        {
+                            long cedula;
+                            if (long.TryParse(cliente.Cedula, out cedula))
+                            {
+                                @string.Format("{0:###-#######-#}", cedula)
+                            }
+                            else
+                            {
+                                @cliente.Cedula
+                            }
+                        }
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@cliente.Email</dd>
+
+                <dt class="col-sm-3">Dirección:</dt>
+                <dd class="col-sm-9">@cliente.Direccion</dd>
+
+                <dt class="col-sm-3">Fecha del Registro:</dt>
+                <dd class="col-sm-9">@cliente.FechaRegistro.ToString("dd/MM/yyyy")</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <a href="/IndexCliente" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+                <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <h5 class="card-title">Detalles del Cliente</h5>
-        <dl class="row">
-            <dt class="col-sm-3">ClienteId:</dt>
-            <dd class="col-sm-9">@cliente.ClienteId</dd>
-
-            <dt class="col-sm-3">Nombre:</dt>
-            <dd class="col-sm-9">@cliente.Nombre</dd>
-
-            <dt class="col-sm-3">Tel&eacute;fono:</dt>
-            <dd class="col-sm-9">@string.Format("{0:(###) ###-####}", long.Parse(cliente.Telefono))</dd>
-
-            <dt class="col-sm-3">C&eacute;dula:</dt>
-            <dd class="col-sm-9">@string.Format("{0:###-#######-#}", long.Parse(cliente.Cedula))</dd>
-
-            <dt class="col-sm-3">Email:</dt>
-            <dd class="col-sm-9">@cliente.Email</dd>
-
-            <dt class="col-sm-3">Direcci&oacute;n:</dt>
-            <dd class="col-sm-9">@cliente.Direccion</dd>
-
-            <dt class="col-sm-3">Fecha del Registro:</dt>
-            <dd class="col-sm-9">@cliente.FechaRegistro.ToString("dd/MM/yyyy")</dd>
-
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a href="/IndexCliente" class="btn btn-outline-primary bi bi bi-arrow-return-left"> Volver</a>
-        <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
-    </div>
-</div>
+}
+else
+{
+    <p class="text-danger">No se encontró el cliente.</p>
+}
 
 @code {
     [Parameter]
     public int ClienteId { get; set; }
+
     public Clientes cliente { get; set; } = new Clientes();
 
     protected override async Task OnInitializedAsync()
@@ -52,9 +162,10 @@
         if (ClienteId > 0)
         {
             cliente.ClienteId = ClienteId;
-            await this.Buscar();
+            await Buscar();
         }
     }
+
     public async Task Buscar()
     {
         var clienteEncontrado = await clienteservice.Buscar(cliente.ClienteId);
@@ -63,19 +174,23 @@
         {
             this.cliente = clienteEncontrado;
         }
+        else
+        {
+            cliente = null!;
+        }
     }
+
     public async Task Eliminar()
     {
         if (cliente == null)
-        {
-
             return;
-        }
+
         if (await clienteservice.Eliminar(ClienteId))
         {
             Atras();
         }
     }
+
     void Atras()
     {
         Navigation.NavigateTo("/IndexCliente");

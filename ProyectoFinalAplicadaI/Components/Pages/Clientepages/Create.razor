@@ -3,50 +3,130 @@
 @inject NavigationManager Navigation
 @inject ClienteService clienteservice
 
-<PageTitle>Registro de Clientes</PageTitle>
+<PageTitle>Crear Cliente</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .card-header h3 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    label {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+
+    .btn-outline-success {
+        background-color: #ffffff;
+        color: #388e3c;
+        border: 2px solid #388e3c;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #388e3c;
+        color: #fff;
+    }
+
+    .input-group {
+        justify-content: space-between;
+    }
+
+    .validation-message {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+</style>
+
 <EditForm Model="cliente" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-
-    <div class="card">
+    <div class="card shadow">
         <div class="card-header">
-            <h3>Registro de Clientes</h3>
+            <h3>Crear Clientes</h3>
         </div>
         <div class="card-body">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col col-6">
                     <label>Nombre:</label>
                     <InputText @bind-Value="cliente.Nombre" class="form-control"></InputText>
-                    <ValidationMessage For="@(() => cliente.Nombre)" />
+                    <ValidationMessage For="@(() => cliente.Nombre)" class="validation-message" />
                 </div>
                 <div class="col col-6">
                     <label>Fecha:</label>
                     <InputDate @bind-Value="cliente.FechaRegistro" class="form-control"></InputDate>
-                    <ValidationMessage For="(() => cliente.FechaRegistro)"></ValidationMessage>
+                    <ValidationMessage For="(() => cliente.FechaRegistro)" class="validation-message"></ValidationMessage>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row mb-3">
                 <div class="col col-6">
-                    <label>C&eacute;dula:</label>
+                    <label>Cédula:</label>
                     <InputText @bind-Value="cliente.Cedula" class="form-control"></InputText>
-                    <ValidationMessage For="(() => cliente.Cedula)"></ValidationMessage>
+                    <ValidationMessage For="(() => cliente.Cedula)" class="validation-message"></ValidationMessage>
                 </div>
                 <div class="col col-6">
-                    <label>Tel&eacute;fono:</label>
+                    <label>Teléfono:</label>
                     <InputText @bind-Value="cliente.Telefono" class="form-control"></InputText>
-                    <ValidationMessage For="(() => cliente.Telefono)"></ValidationMessage>
+                    <ValidationMessage For="(() => cliente.Telefono)" class="validation-message"></ValidationMessage>
                 </div>
             </div>
-            <div>
-                <label>Email:</label>
-                <InputText @bind-Value="cliente.Email" class="form-control"></InputText>
-                <ValidationMessage For="@(() => cliente.Email)" />
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>Email:</label>
+                    <InputText @bind-Value="cliente.Email" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => cliente.Email)" class="validation-message" />
+                </div>
             </div>
-            <div>
-                <label>Direcci&oacuten:</label>
-                <InputText @bind-Value="cliente.Direccion" class="form-control"></InputText>
-                <ValidationMessage For="@(() => cliente.Direccion)" />
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label>Dirección:</label>
+                    <InputText @bind-Value="cliente.Direccion" class="form-control"></InputText>
+                    <ValidationMessage For="@(() => cliente.Direccion)" class="validation-message" />
+                </div>
             </div>
         </div>
+
         <div class="card-footer">
             <div class="input-group">
                 <a href="/IndexCliente" class="btn btn-outline-danger bi bi-arrow-return-left"> Volver</a>
@@ -71,6 +151,7 @@
 
         cliente.FechaRegistro = DateTime.Now;
     }
+
     public async Task Buscar()
     {
         var clienteEncontrado = await clienteservice.Buscar(cliente.ClienteId);
@@ -80,6 +161,7 @@
             this.cliente = clienteEncontrado;
         }
     }
+
     public async Task Guardar()
     {
         bool cedulaExiste = await clienteservice.Existe(cliente.ClienteId);
@@ -96,6 +178,7 @@
             }
         }
     }
+
     void Atras()
     {
         Navigation.NavigateTo("/IndexCliente");
