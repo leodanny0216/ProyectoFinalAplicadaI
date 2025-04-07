@@ -4,39 +4,143 @@
 @inject CompraService compraservice
 @inject InsumoService insumoService
 
-<PageTitle>Registro de Compras</PageTitle>
+<PageTitle>Crear Compra</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .card-header h3, .card-header h4 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    label {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0277bd;
+        border-color: #0277bd;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+
+    .btn-outline-success {
+        background-color: #ffffff;
+        color: #388e3c;
+        border: 2px solid #388e3c;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #388e3c;
+        color: #fff;
+    }
+
+    .input-group {
+        justify-content: space-between;
+    }
+
+    .validation-message {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background-color: #0288d1;
+        color: white;
+    }
+
+    .table td {
+        background-color: #e0f7fa;
+        color: #000;
+    }
+
+    .table tr:hover td {
+        background-color: #b3e5fc;
+    }
+
+    .container .card-header {
+        background-color: #039be5;
+        border-radius: 15px 15px 0 0;
+        margin-bottom: 1rem;
+    }
+</style>
+
 <EditForm Model="compra" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <div class="card shadow-lg">
+    <div class="card shadow">
         <div class="card-header">
-            <h3>Registro de Compras</h3>
+            <h3>🛒 Crear Compra</h3>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="row">
+            <div class="row mb-3">
+                <div class="col col-4">
+                    <label>Fecha Compra:</label>
+                    <InputDate @bind-Value="compra.FechaCompra" class="form-control" disabled></InputDate>
+                    <ValidationMessage For="(() => compra.FechaCompra)" class="validation-message"></ValidationMessage>
                 </div>
-                <div class="row">
-
-                    <div class="col col-4">
-                        <label>Fecha Compra:</label>
-                        <InputDate @bind-Value="compra.FechaCompra" class="form-control" disabled></InputDate>
-                        <ValidationMessage For="(() => compra.FechaCompra)"></ValidationMessage>
-                    </div>
-                    <div class="col col-8">
-                        <label>Descripci&oacute;n:</label>
-                        <InputText @bind-Value="compra.Descripcion" class="form-control"></InputText>
-                        <ValidationMessage For="(() => compra.Descripcion)"></ValidationMessage>
-                    </div>
+                <div class="col col-8">
+                    <label>Descripción:</label>
+                    <InputText @bind-Value="compra.Descripcion" class="form-control"></InputText>
+                    <ValidationMessage For="(() => compra.Descripcion)" class="validation-message"></ValidationMessage>
                 </div>
             </div>
         </div>
+
         <div class="container">
             <div class="card-header">
-                <h4>Detalles de la Compra</h4>
+                <h4>📋 Detalles de la Compra</h4>
             </div>
             <div class="card-body">
-
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col col-6">
                         <label>Insumo:</label>
                         <InputSelect @bind-Value="detalle.InsumoId" class="form-select">
@@ -50,16 +154,17 @@
                     <div class="col col-6">
                         <label>Cantidad:</label>
                         <InputNumber @bind-Value="detalle.Cantidad" class="form-control"></InputNumber>
-                        <ValidationMessage For="(() => detalle.Cantidad)"></ValidationMessage>
+                        <ValidationMessage For="(() => detalle.Cantidad)" class="validation-message"></ValidationMessage>
                     </div>
-
                 </div>
+
                 <br />
-                <table class='table table-bordered table-hover'>
+                <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>Nombre del Insumo</th>
                             <th>Cantidad</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,14 +173,19 @@
                             <tr>
                                 <td>@ObtenerNombreInsumo(detalle.InsumoId)</td>
                                 <td>@detalle.Cantidad</td>
-                                <td><button type="button" class="btn btn-outline-danger" @onclick="()=> EliminarDetalle(detalle)"><i class="bi bi-trash3-fill" /></button></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger" @onclick="() => EliminarDetalle(detalle)">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
                 </table>
-                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-primary bi bi-plus-square">Agregar</button>
+                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-primary bi bi-plus-square"> Agregar</button>
             </div>
         </div>
+
         <div class="card-footer">
             <div class="input-group">
                 <a href="/IndexCompra" class="btn btn-outline-danger bi bi-arrow-return-left"> Volver</a>
@@ -83,7 +193,6 @@
             </div>
         </div>
     </div>
-
 </EditForm>
 
 @code {
@@ -97,11 +206,13 @@
         listaInsumos = await insumoService.Listar(t => true);
         compra.FechaCompra = DateTime.Now;
     }
+
     public string ObtenerNombreInsumo(int insumo)
     {
         var NombreInsumo = listaInsumos.FirstOrDefault(c => c.InsumosId == insumo);
         return NombreInsumo != null ? NombreInsumo.NombreInsumo : string.Empty;
     }
+
     public async Task Guardar()
     {
         var guardo = await compraservice.Guardar(compra);
@@ -110,6 +221,7 @@
             Navigation.NavigateTo("/IndexCompra");
         }
     }
+
     public void AgregarDetalle()
     {
         if (detalle.InsumoId == 0)
@@ -124,14 +236,6 @@
         {
             return;
         }
-        // if (detalle.Cantidad > listaInsumos.FirstOrDefault(I => I.InsumosId == detalle.InsumoId).Cantidad)
-        // {
-        //     notificationService.ShowNotification(
-        //         titulo: "Error",
-        //         mensaje: "La cantidad supera la cantidad disponible en inventario.",
-        //         NotificationSeverity.Error);
-        //     return;
-        // }
 
         compra.ComprasDetalle.Add(detalle);
         detalle = new ComprasDetalle();

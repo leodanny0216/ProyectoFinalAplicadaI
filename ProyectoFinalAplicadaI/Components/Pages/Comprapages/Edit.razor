@@ -5,35 +5,172 @@
 @inject CompraService compraservice
 @inject InsumoService insumoService
 
-<PageTitle>Registro de Compras</PageTitle>
+<PageTitle>Edición de Compras</PageTitle>
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .card-header h3, .card-header h4 {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    label {
+        color: #01579b;
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #ffffff;
+        color: #000;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0277bd;
+        border-color: #0277bd;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f;
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+
+    .btn-outline-success {
+        background-color: #ffffff;
+        color: #388e3c;
+        border: 2px solid #388e3c;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #388e3c;
+        color: #fff;
+    }
+
+    .input-group {
+        justify-content: space-between;
+    }
+
+    .validation-message {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table th {
+        background-color: #0288d1;
+        color: white;
+    }
+
+    .table td {
+        background-color: #e0f7fa;
+        color: #000;
+    }
+
+    .table tr:hover td {
+        background-color: #b3e5fc;
+    }
+
+    .container .card-header {
+        background-color: #039be5;
+        border-radius: 15px 15px 0 0;
+        margin-bottom: 1rem;
+    }
+
+    .alert {
+        border-radius: 10px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        width: 300px;
+    }
+
+    .alert-success {
+        background-color: #81c784;
+        color: #1b5e20;
+        border-color: #66bb6a;
+    }
+
+    .alert-danger {
+        background-color: #ef9a9a;
+        color: #b71c1c;
+        border-color: #e57373;
+    }
+
+    .alert-warning {
+        background-color: #fff59d;
+        color: #f57f17;
+        border-color: #ffee58;
+    }
+</style>
 
 <EditForm Model="compra" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
-    <div class="card shadow-lg">
+
+    <div class="card shadow">
         <div class="card-header">
-            <h3>Registro de Compras</h3>
+            <h3>✏️ Edición de Compras</h3>
         </div>
+
         <div class="card-body">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col col-4">
                     <label>Fecha Compra:</label>
                     <InputDate @bind-Value="compra.FechaCompra" class="form-control" disabled></InputDate>
-                    <ValidationMessage For="@(() => compra.FechaCompra)" />
+                    <ValidationMessage For="@(() => compra.FechaCompra)" class="validation-message" />
                 </div>
                 <div class="col col-8">
                     <label>Descripción:</label>
                     <InputText @bind-Value="compra.Descripcion" class="form-control"></InputText>
-                    <ValidationMessage For="@(() => compra.Descripcion)" />
+                    <ValidationMessage For="@(() => compra.Descripcion)" class="validation-message" />
                 </div>
             </div>
         </div>
 
         <div class="container mt-3">
             <div class="card-header">
-                <h4>Detalles de la Compra</h4>
+                <h4>📋 Detalles de la Compra</h4>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col col-6">
                         <label>Insumo:</label>
                         <InputSelect @bind-Value="detalle.InsumoId" class="form-select">
@@ -47,11 +184,11 @@
                     <div class="col col-6">
                         <label>Cantidad:</label>
                         <InputNumber @bind-Value="detalle.Cantidad" class="form-control"></InputNumber>
-                        <ValidationMessage For="@(() => detalle.Cantidad)" />
+                        <ValidationMessage For="@(() => detalle.Cantidad)" class="validation-message" />
                     </div>
                 </div>
                 <br />
-                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-primary bi bi-plus-square">Agregar</button>
+                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-primary bi bi-plus-square"> Agregar</button>
 
                 <table class="table table-bordered table-hover mt-3">
                     <thead>
@@ -90,8 +227,9 @@
 
 @if (mostrarMensaje)
 {
-    <div class="alert @mensajeClase" role="alert">
+    <div class="alert @mensajeClase alert-dismissible fade show" role="alert">
         @mensajeTexto
+        <button type="button" class="btn-close" @onclick="() => mostrarMensaje = false"></button>
     </div>
 }
 
@@ -104,7 +242,6 @@
     public List<ComprasDetalle> DetallesAgregado { get; set; } = new List<ComprasDetalle>();
     public List<ComprasDetalle> DetallesEliminado { get; set; } = new List<ComprasDetalle>();
 
-    // Variables para mensajes de feedback
     private bool mostrarMensaje = false;
     private string mensajeTexto = "";
     private string mensajeClase = "";
@@ -124,10 +261,10 @@
         else
         {
             compra = new Compras
-                {
-                    FechaCompra = DateTime.Now,
-                    ComprasDetalle = new List<ComprasDetalle>()
-                };
+            {
+                FechaCompra = DateTime.Now,
+                ComprasDetalle = new List<ComprasDetalle>()
+            };
         }
     }
 
@@ -174,10 +311,10 @@
         }
 
         compra.ComprasDetalle.Add(new ComprasDetalle
-            {
-                InsumoId = detalle.InsumoId,
-                Cantidad = detalle.Cantidad
-            });
+        {
+            InsumoId = detalle.InsumoId,
+            Cantidad = detalle.Cantidad
+        });
 
         DetallesAgregado.Add(detalle);
         detalle = new ComprasDetalle();
@@ -195,7 +332,6 @@
     {
         mostrarMensaje = false;
 
-        // Validaciones básicas
         if (string.IsNullOrWhiteSpace(compra.Descripcion))
         {
             MostrarMensaje("La descripción es requerida", "alert-danger");
@@ -214,7 +350,6 @@
 
             if (guardo)
             {
-                // Actualizar cantidades de insumos
                 foreach (var detalleAgregado in DetallesAgregado)
                 {
                     var insumo = listaInsumos.FirstOrDefault(I => I.InsumosId == detalleAgregado.InsumoId);
