@@ -6,8 +6,57 @@
 @rendermode InteractiveServer
 
 <PageTitle>Eliminar Reclamo</PageTitle>
-<div class="card">
-    <div class="card-header bg-danger text-light">
+
+<style>
+    body {
+        background: linear-gradient(to right, #b3e5fc, #81d4fa);
+        color: #000;
+    }
+
+    .card {
+        background: linear-gradient(to right, #e1f5fe, #b3e5fc);
+        border-radius: 20px;
+        padding: 1rem;
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        color: #000;
+    }
+
+    .card-header {
+        background-color: #d32f2f; /* Color de fondo rojo */
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1rem;
+    }
+
+    .card-footer {
+        background-color: #e1f5fe; /* Color de fondo claro */
+    }
+
+    .btn-outline-primary {
+        color: #ffffff;
+        background-color: #0288d1;
+        border-color: #0288d1;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0277bd;
+        border-color: #0277bd;
+    }
+
+    .btn-outline-danger {
+        background-color: #ffffff;
+        color: #d32f2f; /* Color rojo */
+        border: 2px solid #d32f2f;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #d32f2f;
+        color: #fff;
+    }
+</style>
+
+<div class="card shadow-lg">
+    <div class="card-header">
         <h1 class="mb-0">¿Desea Eliminar este Reclamo?</h1>
     </div>
     <div class="card-body">
@@ -22,16 +71,18 @@
             <dt class="col-sm-3">Email:</dt>
             <dd class="col-sm-9">@ObtenerEmailCliente(reclamo.ClienteId)</dd>
 
-            <dt class="col-sm-3">Descripci&oacute;n:</dt>
+            <dt class="col-sm-3">Descripción:</dt>
             <dd class="col-sm-9">@reclamo.Descripcion</dd>
 
-            <dt class="col-sm-3">Acci&oacute;n Tomada:</dt>
+            <dt class="col-sm-3">Acción Tomada:</dt>
             <dd class="col-sm-9">@reclamo.AccionTomada</dd>
         </dl>
     </div>
     <div class="card-footer">
-        <a href="/IndexReclamo" class="btn btn-outline-primary bi bi bi-arrow-return-left"> Volver</a>
-        <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+        <div class="input-group">
+            <a href="/IndexReclamo" class="btn btn-outline-primary bi bi-arrow-return-left"> Volver</a>
+            <button type="button" class="btn btn-outline-danger bi bi-trash" @onclick="Eliminar">Eliminar</button>
+        </div>
     </div>
 </div>
 
@@ -51,6 +102,7 @@
 
         ListaClientes = await clienteservice.Listar(t => true);
     }
+
     public async Task Buscar()
     {
         var reclamoEncontrado = await reclamoservice.Buscar(reclamo.ReclamoId);
@@ -73,7 +125,6 @@
         }
     }
 
-
     void Atras()
     {
         Navigation.NavigateTo("/IndexReclamo");
@@ -85,4 +136,3 @@
         return Email != null ? Email.Email : string.Empty;
     }
 }
-
