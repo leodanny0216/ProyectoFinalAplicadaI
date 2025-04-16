@@ -39,13 +39,13 @@ public class CompraService(IDbContextFactory<ApplicationDbContext> DbFactory)
         else
             return await Modificar(Compras);
     }
-    public async Task<bool> Eliminar(Compras Compras)
+    public async Task<bool> Eliminar(int compra)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var c = await contexto.Compras.FindAsync(Compras.ComprasId);
-        contexto.Entry(c!).State = EntityState.Detached;
-        contexto.Entry(Compras).State = EntityState.Deleted;
-        return await contexto.SaveChangesAsync() > 0;
+        var eliminar = await contexto.Compras
+              .Where(a => a.ComprasId == compra)
+              .ExecuteDeleteAsync();
+        return eliminar > 0;
     }
     public async Task<Compras?> Buscar(int CompraId)
     {

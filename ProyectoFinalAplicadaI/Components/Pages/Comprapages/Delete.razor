@@ -30,9 +30,9 @@
         text-align: center;
     }
 
-    .card-header h3 {
-        margin: 0;
-    }
+        .card-header h3 {
+            margin: 0;
+        }
 
     .text-danger {
         color: #d32f2f !important;
@@ -44,10 +44,10 @@
         border-color: #0288d1;
     }
 
-    .btn-outline-primary:hover {
-        background-color: #0277bd;
-        border-color: #0277bd;
-    }
+        .btn-outline-primary:hover {
+            background-color: #0277bd;
+            border-color: #0277bd;
+        }
 
     .btn-outline-danger {
         background-color: #ffffff;
@@ -55,10 +55,10 @@
         border: 2px solid #d32f2f;
     }
 
-    .btn-outline-danger:hover {
-        background-color: #d32f2f;
-        color: #fff;
-    }
+        .btn-outline-danger:hover {
+            background-color: #d32f2f;
+            color: #fff;
+        }
 </style>
 
 <div class="card shadow-sm border-danger">
@@ -154,7 +154,7 @@
         }
         catch (Exception ex)
         {
-            // Aquí deberías manejar el error, posiblemente mostrando un mensaje al usuario
+          
             Console.WriteLine($"Error al cargar datos: {ex.Message}");
         }
     }
@@ -167,7 +167,14 @@
 
     public async Task Eliminar()
     {
-      
+        if (compra == null)
+        {
+            return;
+        }
+        if (await compraService.Eliminar(ComprasId))
+        {
+            Atras();
+        }
     }
 
     void Atras()
