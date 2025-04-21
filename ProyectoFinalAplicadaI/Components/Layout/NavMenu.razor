@@ -1,64 +1,91 @@
-﻿@implements IDisposable
+﻿@inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager NavigationManager
 @using Microsoft.AspNetCore.Components.Authorization
 
-<!-- Solo muestra la barra superior cuando está autenticado -->
 <AuthorizeView>
     <Authorized>
-        <div class="top-row ps-3 navbar navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="">ProyectoFinalAplicadaI</a>
-                <input type="checkbox" title="Navigation menu" class="navbar-toggler" id="sidebar-toggle" />
+        <div class="page">
+            <!-- Barra superior -->
+            <div class="top-row ps-3 navbar navbar-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="">ProyectoFinalAplicadaI</a>
+                    <input type="checkbox" title="Navigation menu" class="navbar-toggler" id="sidebar-toggle" />
+                </div>
             </div>
-        </div>
 
-        <!-- Sidebar solo visible cuando está autenticado -->
-        <div class="sidebar">
-            <div class="nav-scrollable" onclick="document.getElementById('sidebar-toggle').click()">
-                <nav class="nav flex-column">
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <NavLink class="nav-link" href="/IndexCliente" Match="NavLinkMatch.All">
-                            <i class="bi bi-person-circle" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Clientes
-                        </NavLink>
-                    </div>
+            <!-- Sidebar con menú principal -->
+            <div class="sidebar">
+                <div class="nav-scrollable" onclick="document.getElementById('sidebar-toggle').click()">
+                    <nav class="nav flex-column">
+                        <!-- Encabezado del menú -->
+                        <div class="menu-header">
+                            <h2>📋 Menú Principal</h2>
+                        </div>
 
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <NavLink class="nav-link" href="/IndexInsumo">
-                            <i class="bi bi-box" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Insumos
-                        </NavLink>
-                    </div>
+                        <!-- Opciones del menú -->
+                        <div class="menu-options">
+                            <div class="nav-item px-3" style="line-height: 2.5rem;">
+                                <NavLink class="menu-btn" href="/IndexReclamo">
+                                    <i class="bi bi-exclamation-circle-fill menu-icon"></i> Reclamos
+                                </NavLink>
+                            </div>
 
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <NavLink class="nav-link" href="/IndexReclamo">
-                            <i class="bi bi-emoji-angry" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Reclamos
-                        </NavLink>
-                    </div>
+                            <div class="nav-item px-3" style="line-height: 2.5rem;">
+                                <NavLink class="menu-btn" href="/IndexInsumo">
+                                    <i class="bi bi-box-fill menu-icon"></i> Insumos
+                                </NavLink>
+                            </div>
 
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <NavLink class="nav-link" href="/IndexCompra">
-                            <i class="bi bi-bag-fill" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Compras
-                        </NavLink>
-                    </div>
+                            <div class="nav-item px-3" style="line-height: 2.5rem;">
+                                <NavLink class="menu-btn" href="/IndexCompra">
+                                    <i class="bi bi-cart-fill menu-icon"></i> Compras
+                                </NavLink>
+                            </div>
 
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <NavLink class="nav-link" href="auth">
-                            <i class="bi bi-lock" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Auth Required
-                        </NavLink>
-                    </div>
+                            <div class="nav-item px-3" style="line-height: 2.5rem;">
+                                <NavLink class="menu-btn" href="/IndexCliente">
+                                    <i class="bi bi-person-fill menu-icon"></i> Clientes
+                                </NavLink>
+                            </div>
+                        </div>
 
-                    <div class="nav-item px-3" style="line-height: 2.5rem;">
-                        <form action="Account/Logout" method="post">
-                            <AntiforgeryToken />
-                            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                            <button type="submit" class="nav-link btn btn-link" style="font-size: inherit; width: 100%; text-align: left;">
-                                <i class="bi bi-box-arrow-right" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Logout
-                            </button>
-                        </form>
-                    </div>
-                </nav>
+                        <!-- Otras opciones (Auth y Logout) -->
+                        <div class="nav-item px-3" style="line-height: 2.5rem;">
+                            <NavLink class="nav-link" href="auth">
+                                <i class="bi bi-lock" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Auth Required
+                            </NavLink>
+                        </div>
+
+                        <div class="nav-item px-3" style="line-height: 2.5rem;">
+                            <form action="Account/Logout" method="post">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                <button type="submit" class="nav-link btn btn-link" style="font-size: inherit; width: 100%; text-align: left;">
+                                    <i class="bi bi-box-arrow-right" aria-hidden="true" style="font-size: 1.5rem; vertical-align: middle;"></i> Logout
+                                </button>
+                            </form>
+                        </div>
+                    </nav>
+                </div>
             </div>
+
+            <!-- Contenido principal -->
+            <main>
+                <div class="content px-4">
+                    @Body
+                </div>
+            </main>
         </div>
     </Authorized>
+    <NotAuthorized>
+        <!-- Contenido para usuarios no autenticados -->
+        <main>
+            <div class="content px-4">
+                @Body
+            </div>
+        </main>
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {
@@ -81,3 +108,70 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
+
+<style>
+    /* Estilos para el menú */
+    .menu-header {
+        background-color: #0288d1;
+        color: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem;
+        text-align: center;
+    }
+
+        .menu-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+    .menu-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .menu-btn {
+        background-color: #039be5;
+        border: none;
+        padding: 0.75rem;
+        color: white;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+
+        .menu-btn:hover {
+            background-color: #0277bd;
+            color: #fff;
+        }
+
+    .menu-icon {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+
+    /* Ajustes para el sidebar */
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(to bottom, #b3e5fc, #81d4fa);
+    }
+
+    .nav-scrollable {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    /* Ajustes para el contenido principal */
+    .content {
+        padding-top: 1.5rem;
+
+    }
+</style>s
