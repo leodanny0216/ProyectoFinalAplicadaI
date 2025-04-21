@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/Login"
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
@@ -142,7 +142,7 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            NavigationManager.NavigateTo("/menu");
+            NavigationManager.NavigateTo("/IndexCliente");
         }
         else if (result.RequiresTwoFactor)
         {
