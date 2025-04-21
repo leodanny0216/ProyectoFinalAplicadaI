@@ -44,12 +44,12 @@ public class ClienteService(IDbContextFactory<ApplicationDbContext> DbFactory)
             return await Modificar(cliente);
     }
     //Metodo Eliminar
-    public async Task<bool> Eliminar(int id)
+    public async Task<bool> Eliminar(int cliente)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         var eliminarCliente = await contexto.Clientes
-            .Where(c => c.ClienteId == id)
-            .ExecuteDeleteAsync();
+             .Where(c => c.ClienteId == cliente)
+             .ExecuteDeleteAsync();
         return eliminarCliente > 0;
     }
     //Metodo Buscar 

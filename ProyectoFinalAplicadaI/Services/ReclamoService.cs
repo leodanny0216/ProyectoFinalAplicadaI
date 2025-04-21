@@ -34,13 +34,13 @@ public class ReclamoService(IDbContextFactory<ApplicationDbContext> DbFactory)
         else
             return await Modificar(reclamo);
     }
-    public async Task<bool> Eliminar(Reclamos reclamo)
+    public async Task<bool> Eliminar(int reclamo)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var r = await contexto.Reclamos.FindAsync(reclamo.ReclamoId);
-        contexto.Entry(r!).State = EntityState.Detached;
-        contexto.Entry(reclamo).State = EntityState.Deleted;
-        return await contexto.SaveChangesAsync() > 0;
+        var eliminarReclamos  = await contexto.Reclamos 
+             .Where(c => c.ReclamoId == reclamo)
+             .ExecuteDeleteAsync();
+        return eliminarReclamos > 0;
     }
     public async Task<Reclamos?> Buscar(int ReclamoId)
     {

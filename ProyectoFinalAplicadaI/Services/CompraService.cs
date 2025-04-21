@@ -42,10 +42,16 @@ public class CompraService(IDbContextFactory<ApplicationDbContext> DbFactory)
     public async Task<bool> Eliminar(int compra)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var eliminar = await contexto.Compras
-              .Where(a => a.ComprasId == compra)
-              .ExecuteDeleteAsync();
-        return eliminar > 0;
+        var compras = await contexto.Compras
+                      .Include(c => c.ComprasDetalle)
+                      .FirstOrDefaultAsync(c => c.ComprasId == compra);
+        if (compra != null)
+        {
+            contexto.Compras.Remove(compras);
+            await contexto.SaveChangesAsync();
+            return true;
+        }
+        return false;
     }
     public async Task<Compras?> Buscar(int CompraId)
     {

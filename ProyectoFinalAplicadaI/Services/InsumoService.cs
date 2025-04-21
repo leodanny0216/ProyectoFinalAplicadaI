@@ -53,13 +53,13 @@ public class InsumoService(IDbContextFactory<ApplicationDbContext> DbFactory)
         else
             return await Modificar(insumo);
     }
-    public async Task<bool> Eliminar(Insumos insumo)
+    public async Task<bool> Eliminar(int insumo)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        var i = await contexto.Insumos.FindAsync(insumo.InsumosId);
-        contexto.Entry(i!).State = EntityState.Detached;
-        contexto.Entry(insumo).State = EntityState.Deleted;
-        return await contexto.SaveChangesAsync() > 0;
+        var eliminarInsumo = await contexto.Insumos 
+             .Where(c => c.InsumosId == insumo)
+             .ExecuteDeleteAsync();
+        return eliminarInsumo > 0;
     }
     public async Task<Insumos?> Buscar(int InsumosId)
     {

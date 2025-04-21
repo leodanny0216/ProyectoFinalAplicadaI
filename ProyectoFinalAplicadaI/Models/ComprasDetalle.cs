@@ -10,7 +10,7 @@ public class ComprasDetalle
     [ForeignKey("InsumoId")]
     public int InsumoId { get; set; }
     [Required(ErrorMessage = "Debe especificar la cantidad a comprar")]
-    [Range(5, int.MaxValue, ErrorMessage = "La cantidad minima de productos a comprar es 5")]
+    [Range(1, int.MaxValue, ErrorMessage = "La cantidad minima de productos a comprar es ")]
     public int Cantidad { get; set; }
     public string? ImagenURL { get; set; }
 }
