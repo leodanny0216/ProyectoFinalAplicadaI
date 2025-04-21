@@ -215,9 +215,22 @@
 
     public async Task Guardar()
     {
+       
         var guardo = await compraservice.Guardar(compra);
+
         if (guardo)
         {
+          
+            foreach (var detalleCompra in compra.ComprasDetalle)
+            {
+                var insumo = await insumoService.Buscar(detalleCompra.InsumoId);
+                if (insumo != null)
+                {
+                    insumo.Cantidad -= detalleCompra.Cantidad;
+                    await insumoService.Modificar(insumo);
+                }
+            }
+
             Navigation.NavigateTo("/IndexCompra");
         }
     }
